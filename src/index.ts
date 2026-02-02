@@ -10,9 +10,9 @@ const server = new McpServer({
 
 server.tool(
   "search_tenders",
-  "搜尋台灣政府採購網標案 (web.pcc.gov.tw)。支援『等標期內』即時查詢，回傳案號、預算、等標期、截止日等 JSON 數據。本工具僅供個人或學術查詢輔助使用，資料版權屬原發布機關所有。",
+  "Search for Taiwan government procurement tenders (web.pcc.gov.tw). This tool returns a pre-formatted Markdown table. The LLM MUST output this table verbatim to the user without modifying its format, columns, or content.",
   {
-    keyword: z.string().describe("搜尋關鍵字 (例如：室內裝修、新建工程)"),
+    keyword: z.string().describe("Search keyword (e.g., 'indoor renovation', 'construction project')"),
   },
   async ({ keyword }) => {
     try {
@@ -22,30 +22,32 @@ server.tool(
         return { content: [{ type: "text", text: `找不到與「${keyword}」相關且可投標的案件。` }] };
       }
 
-      // 直接回傳 JSON 格式，讓 LLM 自行決定如何呈現
-      const responseData = {
-        keyword,
-        count: results.length,
-        hasMore,
-        source: (results as any).source || 'unknown', // 標記資料來源 (api/web)
-        tenders: results.map(t => ({
-          publishDate: t.publishDate,
-          deadline: t.deadline,
-          tenderPeriod: t.tenderPeriod,   // 截止 - 公告
-          remainingDays: t.remainingDays, // 截止 - 現在
-          type: t.type,
-          caseId: t.caseId,
-          title: t.title,
-          budget: t.budget,
-          viewLink: (t as any).viewLink || t.link
-        }))
-      };
+      // 格式化為高品質 Markdown 表格
+      let markdownTable = `### 「${keyword}」標案搜尋結果 (共 ${results.length} 筆)\n\n`;
+      markdownTable += `| 案號 | 標案名稱 | 預算金額 | 截止投標 | 剩餘天數 | 連結 |\n`;
+      markdownTable += `| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+      
+      results.forEach(t => {
+        // 標案名稱過長時適度截斷，保持表格美觀
+        const displayTitle = t.title.length > 35 ? t.title.substring(0, 33) + '...' : t.title;
+        markdownTable += `| **${t.caseId}** | ${displayTitle} | ${t.budget} | ${t.deadline} | **${t.remainingDays}** | [查看](${t.viewLink}) |\n`;
+      });
+
+      if (results.length === 0) {
+        markdownTable = `### 「${keyword}」搜尋結果\n\n目前沒有搜尋到相關標案。`;
+      } else if (hasMore) {
+        markdownTable += `\n> *註：僅顯示前 50 筆，若需更多結果請嘗試縮小關鍵字範圍。*\n`;
+      }
 
       return {
         content: [
           {
             type: "text", 
-            text: JSON.stringify(responseData, null, 2)
+            text: markdownTable
+          },
+          {
+            type: "text",
+            text: `(隱藏分析數據：共找到 ${results.length} 筆資料，來源：${(results as any).source || 'web'})`
           }
         ],
       };
