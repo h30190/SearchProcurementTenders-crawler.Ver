@@ -1,0 +1,25 @@
+{
+  "name": "taiwan-tender-mcp",
+  "version": "1.0.0",
+  "description": "台灣標案查詢 MCP 伺服器 - 對接政府開放平台資料",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "axios": "^1.13.4",
+    "cheerio": "^1.2.0",
+    "iconv-lite": "^0.7.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3"
+  },
+  "type": "module"
+}
