@@ -1,6 +1,6 @@
 {
   "name": "taiwan-tender-mcp",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "台灣標案查詢 MCP 伺服器 - 對接政府開放平台資料",
   "main": "index.js",
   "scripts": {

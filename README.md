@@ -4,16 +4,23 @@
 
 ## 特色
 
-- **官網直接介接**：採用爬蟲技術，直接抓取政府官網資料，確保最即時。
+- **官網直接介接**：採用爬蟲技術直接抓取政府官網資料，確保資訊最即時。
 - **等標期智慧查詢**：自動搜尋「等標期內」(尚未截止) 的案件。
-- **完整欄位**：包含案號、案名、預算金額、公告日、截止日、等標期、剩餘天數。
+- **智慧編碼處理**：自動辨識並處理政府網站的 Big5 與 UTF-8 編碼，杜絕亂碼。
+- **完整欄位解析**：精準解析案號、案名、預算金額、公告日、截止日、等標期、剩餘天數。
 - **JSON 回傳**：專為 LLM 優化的資料結構，方便進行後續分析。
+
+## 專案結構
+
+- `src/index.ts`: MCP 伺服器入口與工具定義。
+- `src/services/`: 存放爬蟲邏輯與標案業務處理。
+- `src/utils/`: 存放日期解析與計算等工具函數。
+- `src/types/`: TypeScript 型別定義。
 
 ## 安裝與執行
 
 ### 1. 安裝依賴
 ```bash
-cd taiwan-tender-mcp
 npm install
 ```
 
@@ -31,7 +38,7 @@ npm run build
     "taiwan-tender": {
       "command": "node",
       "args": [
-        "/您的路徑/taiwan-tender-mcp/build/index.js"
+        "C:/您的路徑/SearchProcurementTenders-crawler.Ver/build/index.js"
       ]
     }
   }
